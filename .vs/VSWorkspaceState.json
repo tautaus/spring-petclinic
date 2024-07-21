@@ -1,12 +1,17 @@
 {
   "ExpandedNodes": [
     "",
-    "\\.devcontainer",
     "\\.github",
+    "\\.github\\workflows",
     "\\.mvn",
+    "\\.mvn\\wrapper",
     "\\gradle",
-    "\\src"
+    "\\gradle\\wrapper",
+    "\\src",
+    "\\src\\checkstyle",
+    "\\src\\main",
+    "\\src\\test"
   ],
-  "SelectedNode": "\\src\\main",
+  "SelectedNode": "\\Dockerfile",
   "PreviewInSolutionExplorer": false
 }

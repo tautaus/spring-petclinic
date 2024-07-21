@@ -24,3 +24,4 @@ CMD ["java", "-jar", "app.jar"]
 
 # Expose the port the app runs on
 EXPOSE 8080
+
