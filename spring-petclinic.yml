@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  petclinic:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - custom-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - custom-network
+    depends_on:
+      - petclinic
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - custom-network
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - ./jenkins.yaml:/var/jenkins_home/casc_configs/jenkins.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - custom-network
+
+  zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    command: zap-baseline.py -t http://petclinic:8080 -g gen.conf -r zap-report.html
+    volumes:
+      - ./zap-report:/zap/wrk:rw
+    networks:
+      - custom-network
+    depends_on:
+      - petclinic
+
+  sonarqube:
+    image: sonarqube:latest
+    ports:
+      - "9000:9000"
+    networks:
+      - custom-network
+    depends_on:
+      - petclinic
+
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  jenkins_data:
+
+networks:
+  custom-network:
