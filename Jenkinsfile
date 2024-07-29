@@ -29,6 +29,15 @@ pipeline {
             }
         }
 
+        stage('Deploy Container') {
+            steps {
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'inventory'
+                )
+            }
+        }        
+
     }
 
     post {
