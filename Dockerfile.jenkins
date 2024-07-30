@@ -1,10 +1,17 @@
 FROM jenkins/jenkins:lts
 
 USER root
-RUN apt-get update && apt-get install -y docker.io
+
+# Update and install necessary packages
+RUN apt-get update && apt-get install -y \
+    docker.io \
+    python3-pip \
+    sshpass \
+    && pip3 install ansible
 
 # Install plugins (and dependencies)
 RUN jenkins-plugin-cli --plugins \
+    ansible \
     prometheus \
     configuration-as-code \
     blueocean \
@@ -17,7 +24,6 @@ RUN jenkins-plugin-cli --plugins \
 
 # Copy JCasC configuration file
 COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
-COPY jenkins.yaml /var/jenkins_home/jobs/cmu_devops_project/workspace
 
 # Set environment variable for JCasC
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
@@ -26,5 +32,3 @@ USER jenkins
 
 # Expose the port the app runs on
 EXPOSE 8080
-
-
