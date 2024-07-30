@@ -40,7 +40,7 @@ services:
       - custom-network
     volumes:
       - ./prometheus_data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     depends_on:
       - petclinic
 

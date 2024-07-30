@@ -38,6 +38,15 @@ pipeline {
             }
         }
 
+        stage('Deploy Container to VM') {
+            steps {
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'inventory'
+                )
+            }
+        }
+
         // Further stages would reference env.DOCKER_IMAGE_ID if needed
     }
 

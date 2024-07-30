@@ -1,0 +1,18 @@
+---
+- name: Deploy Spring Petclinic
+  hosts: webserver
+  become: yes
+  tasks:
+    - name: Pull Docker image
+      docker_image:
+        name: spring-petclinic
+        tag: latest
+        source: pull
+
+    - name: Run Spring Petclinic container
+      docker_container:
+        name: petclinic
+        image: spring-petclinic:latest
+        state: started
+        ports:
+          - "8080:8080"
