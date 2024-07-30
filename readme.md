@@ -1,4 +1,4 @@
-# DevSecOps Pipeline Setup
+# DevSecOps Pipeline Setup - Final Project
 
 ## Use Docker to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
 
