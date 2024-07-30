@@ -1,13 +1,13 @@
 # DevSecOps Pipeline Setup - Final Project
 
-## Use Docker to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
+## Prerequisites
 
-1. **Ensure Docker is installed on your machine**:
-    - Follow the instructions on [Docker's official website](https://docs.docker.com/get-docker/) to install Docker.
+- Ensure Docker and Docker Compose are installed on your machine. Follow the instructions on [Docker's official website](https://docs.docker.com/get-docker/) to install Docker and [Docker Compose installation](https://docs.docker.com/compose/install/).
 
-2. **Create a Docker Compose file to define and run multi-container Docker applications**:
-    - Create a file named `docker-compose.yml` in your project root directory with the following content:
+## Use Docker Compose to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
 
+1. **Create a Docker Compose file to define and run multi-container Docker applications**:
+    - Use the provided `docker-compose.yml` in your project root directory. Here is the content of `docker-compose.yml`:
     ```yaml
     version: '3'
     services:
@@ -40,6 +40,12 @@
       jenkins_home:
     ```
 
+2. **Start the Docker Compose services**:
+    - In the terminal, navigate to the directory containing your `docker-compose.yml` and run:
+    ```bash
+    docker-compose up -d
+    ```
+
 ## Fork the Project Repository on GitHub/GitLab and Clone It to Your Local Machine
 
 1. **Navigate to the repository you want to fork on GitHub/GitLab**:
@@ -66,7 +72,7 @@
 ## Run Jenkins in a Docker Container Connected to the Custom Network
 
 1. **Build the Jenkins Docker image using the provided `Dockerfile.jenkins`**:
-    - Make sure you have the `Dockerfile.jenkins` in your `jenkins` directory.
+    - Ensure you have the `Dockerfile.jenkins` in your `jenkins` directory.
     - Run the following command:
     ```bash
     docker build -t custom-jenkins -f Dockerfile.jenkins ./jenkins
