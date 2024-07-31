@@ -19,13 +19,29 @@ pipeline {
             }
         }
 
-        stage('Deploy Container to VM') {
+        // // stage('Deploy Container to VM') {
+        // //     steps {
+        //         ansiblePlaybook(
+        //             playbook: 'deploy.yml',
+        //             inventory: 'inventory',
+        //             credentialsId: 'ec2-user'
+        //         )
+        // //     }
+        // // }
+
+        stage('SonarQube analysis') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'deploy.yml',
-                    inventory: 'inventory',
-                    credentialsId: 'ec2-user'
-                )
+
+                script {
+                    scannerHome = tool 'idk'// must match the name of an actual scanner installation directory on your Jenkins build agent
+                }
+                withSonarQubeEnv(credentialsId: SONARQUBE_CREDENTIALS_ID) {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dproject.settings=sonar-project.properties
+                        """
+                }
+
             }
         }
     }
