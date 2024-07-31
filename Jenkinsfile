@@ -31,12 +31,13 @@ pipeline {
         stage('Add SSH Key and Deploy Container to VM') {
             steps {
                 script {
-                    // Add the SSH key to known hosts
+                    // Add the SSH key to known hosts and set permissions
                     sh '''
                         mkdir -p ~/.ssh
                         chmod 700 ~/.ssh
                         ssh-keyscan -H 13.58.183.76 >> ~/.ssh/known_hosts
                         chmod 600 ~/.ssh/known_hosts
+                        chmod 600 /var/jenkins_home/ansible.pem
                     '''
                     // Execute the Ansible playbook
                     ansiblePlaybook(
