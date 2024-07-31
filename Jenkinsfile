@@ -35,7 +35,7 @@ pipeline {
                     sh '''
                         mkdir -p ~/.ssh
                         chmod 700 ~/.ssh
-                        ssh-keyscan -H ec2-13-58-183-76.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+                        ssh-keyscan -H ec2-3-149-247-7.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
                         chmod 600 ~/.ssh/known_hosts
                         chmod 600 /var/jenkins_home/ansible.pem
                     '''
