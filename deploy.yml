@@ -1,13 +1,25 @@
 - hosts: webservers
+  become: yes
   tasks:
-    - name: Install Docker
-      become: yes
+    - name: Ensure Python 3 is installed
+      package:
+        name: python3
+        state: present
+
+    - name: Install Docker on Debian-based systems
+      when: ansible_os_family == "Debian"
       apt:
         name: docker.io
         state: present
+        update_cache: yes
+
+    - name: Install Docker on RedHat-based systems
+      when: ansible_os_family == "RedHat"
+      yum:
+        name: docker
+        state: present
 
     - name: Start Docker service
-      become: yes
       service:
         name: docker
         state: started
