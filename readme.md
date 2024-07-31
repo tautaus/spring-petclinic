@@ -1,8 +1,16 @@
 # DevSecOps Pipeline Setup - Final Project
 
+
+## Software Used 
+
+- Docker 4.18.0 (104112)
+
+
 ## Prerequisites
 
 - Ensure Docker and Docker Compose are installed on your machine. Follow the instructions on [Docker's official website](https://docs.docker.com/get-docker/) to install Docker and [Docker Compose installation](https://docs.docker.com/compose/install/).
+- Docker Desktop can also be downloaded and installed on the system via https://www.docker.com/products/docker-desktop/
+
 
 ## Use Docker Compose to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
 
