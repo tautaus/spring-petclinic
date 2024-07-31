@@ -8,6 +8,15 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out code..."
+                    git url: 'https://github.com/CChariot/spring-petclinic.git', branch: 'FinalProject_main', credentialsId: 'github-token'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -21,11 +30,13 @@ pipeline {
 
         stage('Deploy Container to VM') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'deploy.yml',
-                    inventory: 'inventory',
-                    credentialsId: 'ec2-user'
-                )
+                script {
+                    ansiblePlaybook(
+                        playbook: '/var/jenkins_home/deploy.yml',
+                        inventory: '/var/jenkins_home/inventory',
+                        extras: '--private-key=/var/jenkins_home/ansible.pem'
+                    )
+                }
             }
         }
     }
