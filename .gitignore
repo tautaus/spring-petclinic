@@ -26,3 +26,4 @@ postgresql
 postgresql_data
 prometheus_data
 grafana_data
+ansible.pem
