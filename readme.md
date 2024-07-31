@@ -41,10 +41,11 @@
     ```
 
 2. **Start the Docker Compose services**:
-    - In the terminal, navigate to the directory containing your `docker-compose.yml` and run:
+    - In the terminal, navigate to the directory containing your `docker-compose_spring_petclinic.yml` and run:
     ```bash
-    docker-compose up -d
+    docker-compose -f docker-compose_spring-petclinic.yml up -d
     ```
+    - This Builds and Deplyos docker containers using Docker Compose
 
 ## Fork the Project Repository on GitHub/GitLab and Clone It to Your Local Machine
 
@@ -61,61 +62,6 @@
     cd <your-repo-name>
     ```
 
-## Create a Custom Docker Network to Connect All the Services
-
-1. **Create a Docker network**:
-    - In your terminal, run:
-    ```bash
-    docker network create devsecops-network
-    ```
-
-## Run Jenkins in a Docker Container Connected to the Custom Network
-
-1. **Build the Jenkins Docker image using the provided `Dockerfile.jenkins`**:
-    - Ensure you have the `Dockerfile.jenkins` in your `jenkins` directory.
-    - Run the following command:
-    ```bash
-    docker build -t custom-jenkins -f Dockerfile.jenkins ./jenkins
-    ```
-
-2. **Run the Jenkins container**:
-    - Execute:
-    ```bash
-    docker run -d --name jenkins --network devsecops-network -p 8080:8080 -p 50000:50000 custom-jenkins
-    ```
-
-## Run SonarQube in a Docker Container Connected to the Custom Network
-
-1. **Run the SonarQube container**:
-    - Execute:
-    ```bash
-    docker run -d --name sonarqube --network devsecops-network -p 9000:9000 sonarqube
-    ```
-
-## Run Prometheus in a Docker Container Connected to the Custom Network
-
-1. **Run the Prometheus container**:
-    - Ensure you have the `prometheus.yml` configuration file in your project directory.
-    - Execute:
-    ```bash
-    docker run -d --name prometheus --network devsecops-network -p 9090:9090 -v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
-    ```
-
-## Run Grafana in a Docker Container Connected to the Custom Network
-
-1. **Run the Grafana container**:
-    - Execute:
-    ```bash
-    docker run -d --name grafana --network devsecops-network -p 3000:3000 grafana/grafana
-    ```
-
-## Run OWASP ZAP in a Docker Container Connected to the Custom Network
-
-1. **Run the OWASP ZAP container**:
-    - Execute:
-    ```bash
-    docker run -d --name owasp-zap --network devsecops-network -p 8081:8081 owasp/zap2docker-stable
-    ```
 
 ## Create a Jenkins Pipeline That Uses the Forked GitHub Repository
 
