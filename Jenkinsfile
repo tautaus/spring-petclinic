@@ -28,9 +28,17 @@ pipeline {
             }
         }
 
-        stage('Deploy Container to VM') {
+        stage('Add SSH Key and Deploy Container to VM') {
             steps {
                 script {
+                    // Add the SSH key to known hosts
+                    sh '''
+                        mkdir -p ~/.ssh
+                        chmod 700 ~/.ssh
+                        ssh-keyscan -H 13.58.183.76 >> ~/.ssh/known_hosts
+                        chmod 600 ~/.ssh/known_hosts
+                    '''
+                    // Execute the Ansible playbook
                     ansiblePlaybook(
                         playbook: '/var/jenkins_home/deploy.yml',
                         inventory: '/var/jenkins_home/inventory',
