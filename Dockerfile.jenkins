@@ -6,20 +6,25 @@ USER root
 RUN apt-get update
 
 # Install Docker
-RUN apt-get install -y docker.io || (apt-cache policy docker.io && exit 1)
+RUN apt-get install -y docker.io 
+#|| (apt-cache policy docker.io && exit 1)
 
 # Install Python3 pip
-RUN apt-get install -y python3-pip || (apt-cache policy python3-pip && exit 1)
+RUN apt-get install -y python3-pip 
+#|| (apt-cache policy python3-pip && exit 1)
 
 # Install sshpass
-RUN apt-get install -y sshpass || (apt-cache policy sshpass && exit 1)
+RUN apt-get install -y sshpass 
+#|| (apt-cache policy sshpass && exit 1)
 
 # Install Ansible using apt
-RUN apt-get install -y ansible || (apt-cache policy ansible && exit 1)
+RUN apt-get install -y ansible 
+#|| (apt-cache policy ansible && exit 1)
 
 # Install plugins (and dependencies)
 RUN jenkins-plugin-cli --plugins \
     ansible \
+    docker-workflow:580.vc0c340686b_54 \
     prometheus \
     configuration-as-code \
     blueocean \
@@ -32,6 +37,7 @@ RUN jenkins-plugin-cli --plugins \
 
 # Copy JCasC configuration file
 COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
+COPY jenkins.yaml /var/jenkins_home/jobs/cmu_devops_project/workspace
 
 # Set environment variable for JCasC
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
