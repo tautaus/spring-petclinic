@@ -1,13 +1,28 @@
 ---
 - name: Deploy Spring Petclinic
-  hosts: webserver
+  hosts: webservers
   become: yes
   tasks:
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
     - name: Pull Docker image
       docker_image:
         name: spring-petclinic
         tag: latest
         source: pull
+
+    - name: Stop and remove any existing container
+      docker_container:
+        name: petclinic
+        state: absent
 
     - name: Run Spring Petclinic container
       docker_container:

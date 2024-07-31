@@ -1,2 +1,2 @@
-[webserver]
- 172.27.117.109 ansible_ssh_user=st9751 ansible_ssh_private_key_file=~/.ssh/id_rsa
+[webservers]
+production ansible_host=13.58.183.76 ansible_user=ec2-user ansible_ssh_private_key_file=/c/Users/lihan/OneDrive/Desktop/DevOps_Final/ansible/spring-petclinic/ansible.pem
