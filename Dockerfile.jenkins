@@ -2,12 +2,20 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-# Update and install necessary packages
-RUN apt-get update && apt-get install -y \
-    docker.io \
-    python3-pip \
-    sshpass \
-    && pip3 install ansible
+# Update package lists
+RUN apt-get update
+
+# Install Docker
+RUN apt-get install -y docker.io || (apt-cache policy docker.io && exit 1)
+
+# Install Python3 pip
+RUN apt-get install -y python3-pip || (apt-cache policy python3-pip && exit 1)
+
+# Install sshpass
+RUN apt-get install -y sshpass || (apt-cache policy sshpass && exit 1)
+
+# Install Ansible using apt
+RUN apt-get install -y ansible || (apt-cache policy ansible && exit 1)
 
 # Install plugins (and dependencies)
 RUN jenkins-plugin-cli --plugins \
@@ -28,6 +36,10 @@ COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
 # Set environment variable for JCasC
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml
 
+# Add jenkins user to docker group
+RUN usermod -aG docker jenkins
+
+# Switch back to jenkins user
 USER jenkins
 
 # Expose the port the app runs on

@@ -6,7 +6,7 @@ credentials:
           description: "github"
           id: "3afa055d-73a9-4aff-aa10-9d385042650c"
           scope: GLOBAL
-          secret: $GITHUB_TOKEN
+          secret: "${GITHUB_TOKEN}"
 #      - string:
 #          id: "58b57ccb-9fc0-4180-9e6c-91b9df3a6440"
 #          scope: GLOBAL

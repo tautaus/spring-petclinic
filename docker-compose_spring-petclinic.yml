@@ -21,6 +21,8 @@ services:
       - "50000:50000"
     networks:
       - custom-network
+    privileged: true
+    user: root
     volumes:
       - ./jenkins_data:/var/jenkins_home
       - ./jenkins.yaml:/var/jenkins_home/casc_configs/jenkins.yaml
@@ -40,7 +42,7 @@ services:
       - custom-network
     volumes:
       - ./prometheus_data:/prometheus
-      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       - petclinic
 
