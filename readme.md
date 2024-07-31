@@ -45,7 +45,7 @@
     ```bash
     docker-compose -f docker-compose_spring-petclinic.yml up -d
     ```
-    - This Builds and Deplyos docker containers using Docker Compose
+    - This Builds and Deploys docker containers using Docker Compose
 
 ## Fork the Project Repository on GitHub/GitLab and Clone It to Your Local Machine
 
@@ -144,7 +144,7 @@
     ```groovy
     stage('OWASP ZAP Scan') {
         steps {
-            sh 'docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://your-app:8080'
+            sh 'docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://petclinic:8080'
         }
     }
     ```
