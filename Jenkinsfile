@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     echo "Checking out code..."
-                    git url: 'https://github.com/CChariot/spring-petclinic.git', branch: 'FinalProject_main', credentialsId: 'github-token'
+                    git url: 'https://github.com/tautaus/spring-petclinic.git', branch: 'FinalProject_main', credentialsId: 'github-token'
                 }
             }
         }
