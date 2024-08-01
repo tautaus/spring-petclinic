@@ -50,21 +50,21 @@ pipeline {
         }
 
 
-        stage('SonarQube analysis') {
-            steps {
-
-                script {
-                    scannerHome = tool 'sonar-scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
-                }
-                withSonarQubeEnv('test_sonarqube') {
-                        sh """
-                            ${scannerHome}/bin/sonar-scanner \
-                            -Dproject.settings=sonar-project.properties
-                        """
-                }
-
-            }
-        }
+//         stage('SonarQube analysis') {
+//             steps {
+//
+//                 script {
+//                     scannerHome = tool 'sonar-scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
+//                 }
+//                 withSonarQubeEnv('test_sonarqube') {
+//                         sh """
+//                             ${scannerHome}/bin/sonar-scanner \
+//                             -Dproject.settings=sonar-project.properties
+//                         """
+//                 }
+//
+//             }
+//         }
 
         stage('Run ZAP Scan') {
             steps {
@@ -75,7 +75,7 @@ pipeline {
                     sh 'mkdir -p zap-report'
 
                     // Run ZAP scan on the EC2 instance
-                    def zapScan = docker.image('ghcr.io/zaproxy/zaproxy:stable').run("""
+                    def zapScan = docker.image("ghcr.io/zaproxy/zaproxy:stable").run("""
                         -v ${WORKSPACE}/zap-report:/zap/wrk:rw \
                         --name zap-scan \
                         --rm \
