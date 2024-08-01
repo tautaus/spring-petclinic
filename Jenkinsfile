@@ -75,7 +75,7 @@ pipeline {
                     // Run the ZAP scan
                     try {
                         zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
-                            sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -r -I zap-report.html"
+                            sh "zap-baseline.py -I -t http://3.149.247.7:8080 -g gen.conf -r zap-report.html"
                         }
 
                     // handle exceptions
