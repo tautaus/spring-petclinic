@@ -74,7 +74,7 @@ pipeline {
 
                     // Run the ZAP scan
                     try {
-                        zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
+                        zapImage.inside("-v ./zap-report:/zap/wrk:rw --name zap-scan --rm") {
                             sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -r zap-report.html"
                         }
 
@@ -103,7 +103,7 @@ pipeline {
              // Publish HTML Report
             publishHTML([
                 reportName: 'HTML Report',
-                reportDir: '${WORKSPACE}', // Directory where the report is generated
+                reportDir: '.', // Directory where the report is generated
                 reportFiles: 'zap-report.html', // Report file name(s)
                 keepAll: true, // Keep all reports (useful for historical comparisons)
                 alwaysLinkToLastBuild: true, // Always link to the last build's report
