@@ -79,7 +79,7 @@ pipeline {
                         -v ${WORKSPACE}/zap-report:/zap/wrk:rw \
                         --name zap-scan \
                         --rm \
-                        zap-baseline.py -t http://3.149.247.7:8080/:8080 -g gen.conf -r zap-report.html
+                        zap-baseline.py -t http://localhost:8080 -g gen.conf -r zap-report.html
                     """)
 
                     // Wait for the scan to complete
