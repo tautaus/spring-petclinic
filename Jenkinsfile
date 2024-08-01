@@ -102,7 +102,7 @@ pipeline {
             echo 'Pipeline completed successfully!'
              // Publish HTML Report
             publishHTML([
-                reportName: 'HTML Report',
+                reportName: 'ZAP_HTML_Report',
                 reportDir: '.', // Directory where the report is generated
                 reportFiles: 'zap-report.html', // Report file name(s)
                 keepAll: true, // Keep all reports (useful for historical comparisons)
