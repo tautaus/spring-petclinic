@@ -73,9 +73,16 @@ pipeline {
                     def zapImage = docker.image("ghcr.io/zaproxy/zaproxy:stable")
 
                     // Run the ZAP scan
-                    zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
-                        sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -r -I zap-report.html"
-                    }
+                    try {
+                        zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
+                            sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -r -I zap-report.html"
+                        }
+
+                    // handle exceptions
+                    } catch (Exception e) {
+                    echo "Unable to perform ZAP scan: ${e.message}"
+                    currentBuild.result = 'UNSTABLE'
+                }
                 }
             }
        }
