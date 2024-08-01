@@ -25,9 +25,9 @@ RUN jenkins-plugin-cli --plugins \
     github:1.39.0 \
     github-branch-source:1790.v5a_7859812c8d
 
-# Copy JCasC configuration file
+# Copy JCasC configuration file and other resources
 COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
-COPY jenkins.yaml /var/jenkins_home/jobs/cmu_devops_project/workspace
+COPY Jenkinsfile /var/jenkins_home/Jenkinsfile
 COPY inventory /var/jenkins_home/inventory
 COPY deploy.yml /var/jenkins_home/deploy.yml
 COPY ansible.pem /var/jenkins_home/ansible.pem
