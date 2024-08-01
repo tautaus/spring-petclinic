@@ -80,7 +80,7 @@ pipeline {
 
                     // handle exceptions
                     } catch (Exception e) {
-                    echo "Unable to perform ZAP scan: ${e.message}"
+                    echo "Exceptions found during ZAP scan: ${e.message}"
                     currentBuild.result = 'UNSTABLE'
                 }
                 }
