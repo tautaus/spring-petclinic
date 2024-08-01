@@ -1,33 +1,40 @@
----
-- name: Deploy Spring Petclinic
-  hosts: webservers
+- hosts: webservers
   become: yes
   tasks:
-    - name: Install Docker
+    - name: Ensure Python 3 is installed
+      package:
+        name: python3
+        state: present
+
+    - name: Install Docker on Debian-based systems
+      when: ansible_os_family == "Debian"
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Install Docker on RedHat-based systems
+      when: ansible_os_family == "RedHat"
       yum:
         name: docker
         state: present
+
     - name: Start Docker service
       service:
         name: docker
         state: started
-        enabled: true
+        enabled: yes
 
     - name: Pull Docker image
       docker_image:
-        name: spring-petclinic
+        name: chariot97/petclinic
         tag: latest
         source: pull
 
-    - name: Stop and remove any existing container
+    - name: Run Docker container
       docker_container:
-        name: petclinic
-        state: absent
-
-    - name: Run Spring Petclinic container
-      docker_container:
-        name: petclinic
-        image: spring-petclinic:latest
+        name: spring-petclinic
+        image: chariot97/petclinic:latest
         state: started
         ports:
           - "8080:8080"

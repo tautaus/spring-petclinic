@@ -37,6 +37,9 @@ RUN jenkins-plugin-cli --plugins \
 # Copy JCasC configuration file
 COPY jenkins.yaml /var/jenkins_home/casc_configs/jenkins.yaml
 COPY jenkins.yaml /var/jenkins_home/jobs/cmu_devops_project/workspace
+COPY inventory /var/jenkins_home/inventory
+COPY deploy.yml /var/jenkins_home/deploy.yml
+COPY ansible.pem /var/jenkins_home/ansible.pem
 
 # Set environment variable for JCasC
 ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs/jenkins.yaml

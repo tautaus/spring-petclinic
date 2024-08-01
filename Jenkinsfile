@@ -8,24 +8,44 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out code..."
+                    git url: 'https://github.com/CChariot/spring-petclinic.git', branch: 'FinalProject_main', credentialsId: 'github-token'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
                     echo "Building Docker Image..."
-                    def dockerImage = docker.build("spring-petclinic", "--no-cache .")
+                    def dockerImage = docker.build("petclinic:latest", "--no-cache .")
                     echo "Docker Image built: ${dockerImage.id}"
                     env.DOCKER_IMAGE_ID = dockerImage.id
                 }
             }
         }
 
-        stage('Deploy Container to VM') {
+        stage('Add SSH Key and Deploy Container to VM') {
             steps {
-                ansiblePlaybook(
-                    playbook: 'deploy.yml',
-                    inventory: 'inventory',
-                    credentialsId: 'ec2-user'
-                )
+                script {
+                    // Add the SSH key to known hosts and set permissions
+                    sh '''
+                        mkdir -p ~/.ssh
+                        chmod 700 ~/.ssh
+                        ssh-keyscan -H ec2-3-149-247-7.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+                        chmod 600 ~/.ssh/known_hosts
+                        chmod 600 /var/jenkins_home/ansible.pem
+                    '''
+                    // Execute the Ansible playbook
+                    ansiblePlaybook(
+                        playbook: '/var/jenkins_home/deploy.yml',
+                        inventory: '/var/jenkins_home/inventory',
+                        extras: '--private-key=/var/jenkins_home/ansible.pem'
+                    )
+                }
             }
         }
 
