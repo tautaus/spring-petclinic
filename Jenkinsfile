@@ -50,21 +50,21 @@ pipeline {
         }
 
 
-//         stage('SonarQube analysis') {
-//             steps {
-//
-//                 script {
-//                     scannerHome = tool 'sonar-scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
-//                 }
-//                 withSonarQubeEnv('test_sonarqube') {
-//                         sh """
-//                             ${scannerHome}/bin/sonar-scanner \
-//                             -Dproject.settings=sonar-project.properties
-//                         """
-//                 }
-//
-//             }
-//         }
+        stage('SonarQube analysis') {
+            steps {
+
+                script {
+                    scannerHome = tool 'sonar-scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
+                }
+                withSonarQubeEnv('test_sonarqube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dproject.settings=sonar-project.properties
+                        """
+                }
+
+            }
+        }
 
         stage('Run ZAP Scan') {
             steps {
