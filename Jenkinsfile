@@ -103,7 +103,7 @@ pipeline {
              // Publish HTML Report
             publishHTML([
                 reportName: 'ZAP_HTML_Report',
-                reportDir: 'zap-report', // Directory where the report is generated
+                reportDir: './zap-report', // Directory where the report is generated
                 reportFiles: 'zap-report.html', // Report file name(s)
                 keepAll: true, // Keep all reports (useful for historical comparisons)
                 alwaysLinkToLastBuild: true, // Always link to the last build's report
