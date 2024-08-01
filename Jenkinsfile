@@ -49,6 +49,7 @@ pipeline {
             }
         }
 
+
         stage('SonarQube analysis') {
             steps {
 
@@ -64,6 +65,34 @@ pipeline {
 
             }
         }
+
+        stage('Run ZAP Scan') {
+            steps {
+                script {
+                    echo "Running ZAP Scan..."
+
+                    // Ensure the zap-report directory exists
+                    sh 'mkdir -p zap-report'
+
+                    // Run ZAP scan on the EC2 instance
+                    def zapScan = docker.image('ghcr.io/zaproxy/zaproxy:stable').run("""
+                        -v ${WORKSPACE}/zap-report:/zap/wrk:rw \
+                        --name zap-scan \
+                        --rm \
+                        zap-baseline.py -t http://3.149.247.7:8080/:8080 -g gen.conf -r zap-report.html
+                    """)
+
+                    // Wait for the scan to complete
+                    zapScan.stop()
+
+                    echo "ZAP Scan completed. Report saved in zap-report/zap-report.html"
+
+                    // Archive the ZAP report as an artifact
+                    archiveArtifacts artifacts: 'zap-report/zap-report.html', fingerprint: true
+                }
+            }
+       }
+
     }
 
     post {
