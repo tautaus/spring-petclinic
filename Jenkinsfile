@@ -69,29 +69,30 @@ pipeline {
         stage('Run ZAP Scan') {
             steps {
                 script {
+                    // Create the report directory
+                    sh "mkdir -p ${WORKSPACE}/zap-report"
+
                     // Pull the ZAP image
                     def zapImage = docker.image("ghcr.io/zaproxy/zaproxy:stable")
 
                     // Run the ZAP scan
                     try {
-                        zapImage.inside("-v ./zap-report:/zap/wrk:rw --name zap-scan --rm") {
+                        zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
                             sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -r zap-report.html"
-
+                            // List files in the container to check if the report was generated
+                            sh "ls -la /zap/wrk"
                         }
-                          // Debug steps
+
+                        // Debug steps to verify the report in the workspace
                         sh "ls -la ${WORKSPACE}/zap-report"
                         sh "cat ${WORKSPACE}/zap-report/zap-report.html || echo 'ZAP report not found'"
 
-
-                    // handle exceptions
                     } catch (Exception e) {
-                    echo "Warnings found during ZAP scan: ${e.message}"
-
-                }
+                        echo "Warnings found during ZAP scan: ${e.message}"
+                    }
                 }
             }
-       }
-
+        }
     }
 
     post {
