@@ -97,6 +97,7 @@ pipeline {
     post {
         always {
             script {
+                // Stopping and removing the Docker image if exists
                 if (env.DOCKER_IMAGE_ID) {
                     echo "Stopping and removing Docker Image with ID: ${env.DOCKER_IMAGE_ID}"
                     sh "docker rmi -f ${env.DOCKER_IMAGE_ID}"
@@ -105,15 +106,22 @@ pipeline {
         }
         success {
             echo 'Pipeline completed successfully!'
-             // Publish HTML Report
-            publishHTML([
-                reportName: 'ZAP_HTML_Report',
-                reportDir: '${WORKSPACE}/zap-report', // Directory where the report is generated
-                reportFiles: 'zap-report.html', // Report file name(s)
-                keepAll: true, // Keep all reports (useful for historical comparisons)
-                alwaysLinkToLastBuild: true, // Always link to the last build's report
-                allowMissing: false // Fail the build if the report is missing
-            ])
+            // Verify the report exists before publishing
+            script {
+                if (fileExists("${WORKSPACE}/zap-report/zap-report.html")) {
+                    publishHTML([
+                        reportName: 'ZAP_HTML_Report',
+                        reportDir: 'zap-report', // Directory where the report is generated
+                        reportFiles: 'zap-report.html', // Report file name(s)
+                        keepAll: true, // Keep all reports (useful for historical comparisons)
+                        alwaysLinkToLastBuild: true, // Always link to the last build's report
+                        allowMissing: false // Fail the build if the report is missing
+                    ])
+                } else {
+                    echo 'ZAP report not found, skipping HTML report publishing.'
+                    currentBuild.result = 'UNSTABLE' // Mark the build as unstable if the report is missing
+                }
+            }
         }
         failure {
             echo 'Pipeline failed.'
