@@ -93,6 +93,15 @@ pipeline {
         }
         success {
             echo 'Pipeline completed successfully!'
+             // Publish HTML Report
+            publishHTML([
+                reportName: 'HTML Report',
+                reportDir: '.', // Directory where the report is generated
+                reportFiles: 'report.html', // Report file name(s)
+                keepAll: true, // Keep all reports (useful for historical comparisons)
+                alwaysLinkToLastBuild: true, // Always link to the last build's report
+                allowMissing: false // Fail the build if the report is missing
+            ])
         }
         failure {
             echo 'Pipeline failed.'
