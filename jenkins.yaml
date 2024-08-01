@@ -62,7 +62,6 @@ jenkins:
         - "consoleUrlProvider"
         - mailer:
             emailAddress: "lihanzhan@gmail.com"
-        - "favorite"
         - preferredProvider:
             providerId: "default"
         - "experimentalFlags"
@@ -101,21 +100,14 @@ security:
     approvedSignatures:
     - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
 unclassified:
-  bitbucketEndpointConfiguration:
-    endpoints:
-    - bitbucketCloudEndpoint:
-        enableCache: false
-        manageHooks: false
-        repositoriesCacheDuration: 0
-        teamCacheDuration: 0
   buildDiscarders:
     configuredBuildDiscarders:
     - "jobBuildDiscarder"
   fingerprints:
     fingerprintCleanupDisabled: false
     storage: "file"
-  gitHubConfiguration:
-    apiRateLimitChecker: NoThrottle
+  # gitHubConfiguration:
+  #   apiRateLimitChecker: NoThrottle
   gitHubPluginConfig:
     hookSecretConfigs:
     - credentialsId: "3afa055d-73a9-4aff-aa10-9d385042650c"
