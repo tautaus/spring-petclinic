@@ -113,17 +113,6 @@ services:
       - db
     env_file:
       - .env
-  # Uncomment and update the sonarscanner service if needed
-  # sonarscanner:
-  #   image: sonarsource/sonar-scanner-cli
-  #   networks:
-  #     - custom-network
-  #   volumes:
-  #     - ./:/usr/src
-  #   env_file:
-  #     - .env
-  #   depends_on:
-  #     - sonarqube
 
 volumes:
   prometheus_data:
