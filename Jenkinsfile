@@ -77,8 +77,10 @@ pipeline {
 
                     // Run the ZAP scan
                     try {
+                    // -I to ignore errors
+                    // -j to include inline css
                         zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
-                            sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -r zap-report.html"
+                            sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -j -r zap-report.html"
                             // Ensure the report is copied to the mounted volume
                             sh "cp /zap/wrk/zap-report.html ${WORKSPACE}/zap-report/"
                         }
