@@ -19,15 +19,15 @@ pipeline {
             }
         }
 
-        // // stage('Deploy Container to VM') {
-        // //     steps {
-        //         ansiblePlaybook(
-        //             playbook: 'deploy.yml',
-        //             inventory: 'inventory',
-        //             credentialsId: 'ec2-user'
-        //         )
-        // //     }
-        // // }
+        stage('Deploy Container to VM') {
+            steps {
+                ansiblePlaybook(
+                    playbook: 'deploy.yml',
+                    inventory: 'inventory',
+                    credentialsId: 'ec2-user'
+                )
+            }
+        }
 
         stage('SonarQube analysis') {
             steps {
