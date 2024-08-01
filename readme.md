@@ -1,8 +1,13 @@
 # DevSecOps Pipeline Setup - Final Project
 
+## Authors
+- Alan Kim
+- Tao Sun
+- Meedm Bossard
+- Lihan Zhan
+- Nicholas Mucks
 
-## Software Used 
-
+## Software Used
 - Docker 4.18.0 (104112)
 
 
