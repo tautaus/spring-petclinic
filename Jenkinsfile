@@ -66,10 +66,10 @@ pipeline {
             }
         }
 
-        stage('Run ZAP Scan') {
+      stage('Run ZAP Scan') {
             steps {
                 script {
-                    // Create the report directory
+                    // Create the zap-report directory
                     sh "mkdir -p ${WORKSPACE}/zap-report"
 
                     // Pull the ZAP image
@@ -79,14 +79,16 @@ pipeline {
                     try {
                         zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
                             sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -r zap-report.html"
-                            // List files in the container to check if the report was generated
-                            sh "ls -la /zap/wrk"
+                            // Ensure the report is copied to the mounted volume
+                            sh "cp /zap/wrk/zap-report.html ${WORKSPACE}/zap-report/"
                         }
 
-                        // Debug steps to verify the report in the workspace
+                        // Add a small delay before container cleanup
+                        sleep 5
+
+                        // Debug steps
                         sh "ls -la ${WORKSPACE}/zap-report"
                         sh "cat ${WORKSPACE}/zap-report/zap-report.html || echo 'ZAP report not found'"
-
                     } catch (Exception e) {
                         echo "Warnings found during ZAP scan: ${e.message}"
                     }
@@ -97,35 +99,24 @@ pipeline {
 
     post {
         always {
-            script {
-                // Stopping and removing the Docker image if exists
-                if (env.DOCKER_IMAGE_ID) {
-                    echo "Stopping and removing Docker Image with ID: ${env.DOCKER_IMAGE_ID}"
-                    sh "docker rmi -f ${env.DOCKER_IMAGE_ID}"
-                }
-            }
+            publishHTML(target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: true,
+                reportDir: "${WORKSPACE}/zap-report",
+                reportFiles: 'zap-report.html',
+                reportName: 'OWASP_ZAP_Report'
+            ])
+
+             // Archive the ZAP report as a downloadable artifact
+            archiveArtifacts artifacts: 'zap-report/*.html', fingerprint: true
         }
         success {
             echo 'Pipeline completed successfully!'
-            // Verify the report exists before publishing
-            script {
-                if (fileExists("${WORKSPACE}/zap-report/zap-report.html")) {
-                    publishHTML([
-                        reportName: 'ZAP_HTML_Report',
-                        reportDir: 'zap-report', // Directory where the report is generated
-                        reportFiles: 'zap-report.html', // Report file name(s)
-                        keepAll: true, // Keep all reports (useful for historical comparisons)
-                        alwaysLinkToLastBuild: true, // Always link to the last build's report
-                        allowMissing: false // Fail the build if the report is missing
-                    ])
-                } else {
-                    echo 'ZAP report not found, skipping HTML report publishing.'
-                    currentBuild.result = 'UNSTABLE' // Mark the build as unstable if the report is missing
-                }
-            }
         }
         failure {
             echo 'Pipeline failed.'
         }
     }
 }
+
