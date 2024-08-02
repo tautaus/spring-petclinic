@@ -7,6 +7,11 @@
 - Lihan Zhan
 - Nicholas Mucks
 
+
+## Recording of end-to-end pipeline
+https://drive.google.com/file/d/1TwylXAH4F6gd2tyFcT2usj5I6zER9chY/view?usp=sharing
+
+
 ## Software Used
 - docker 4.18.0 (104112)
 - grafana v10.2.8
@@ -719,3 +724,4 @@
 
 
 This document provides a comprehensive guide to set up and configure the DevSecOps pipeline for your project. Follow each step carefully to ensure a successful deployment.
+
