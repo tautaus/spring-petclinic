@@ -161,8 +161,12 @@
     - Install "SonarQube Scanner" plugin.
 
 2. **Configure the SonarQube server details in Jenkins**:
-    - Go to `Manage Jenkins > Configure System`.
-    - Add SonarQube servers under `SonarQube Servers`.
+    - Go to Jenkins server http://localhost:8081
+    - Go to `Manage Jenkins -> Systems -> SonarQube servers`.
+    - Set the following fields:
+        Name: test_sonarqube
+        Server URL: http://sonarqube:9000
+        Server authentication token
 
 3. **Add a SonarQube analysis stage to your Jenkinsfile**:
     ```
@@ -185,7 +189,20 @@
 
 4. **Login to SonarQube**:
     - Go to sonarqube server http://localhost:9000
-    - Login with credentials
+    - Login with credentials and reset password when prompted:
+        username: admin
+        password: admin
+    - Click on “Create a local project”
+    - Create a project with following specifications:
+        Project display name: petclinic
+        Project key: petclinic
+        Main branch name: main
+    - Choose “Use the global setting” then create the project
+    - For the Analysis Method, choose “Locally”
+    - To Analyze your project, choose Generate a project token, use the following specifications, then generate token:
+        Token name: Analyze “petclinic”
+        Expires in: 30 days
+    - Copy this token (edited) 
 
 ## Execute OWASP ZAP With Appropriate Configuration
 
