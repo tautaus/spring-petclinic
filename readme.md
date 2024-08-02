@@ -8,7 +8,29 @@
 - Nicholas Mucks
 
 ## Software Used
-- Docker 4.18.0 (104112)
+- docker 4.18.0 (104112)
+- grafana v10.2.8
+- sonarqube:8.9-community
+- prometheus v2.35
+- Spring Framework v6.1.2
+- OWASP ZAP Proxy v3.0.3
+- AWS EC2 (Instance Type: t2.micro)
+- ansible v403.v8d0ca_dcb_b_502
+- Java v22
+
+ 
+## Jenkins Plugins Used
+- ansible v403.v8d0ca_dcb_b_502
+- docker-workflow:580.vc0c340686b_54 
+- prometheus v2.35
+- configuration-as-code 
+- blueocean v1.27.14
+- sonarqube:8.9-community
+- json-path-api:2.8.0-5.v07cb_a_1ca_738c 
+- token-macro:400.v35420b_922dcb_ 
+- favorite:2.218.vd60382506538 
+- github:1.39.0 
+- github-branch-source:1790.v5a_7859812c8d
 
 
 ## Prerequisites
