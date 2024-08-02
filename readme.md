@@ -183,6 +183,9 @@
         }
     ```
 
+4. **Login to SonarQube**:
+    - Go to sonarqube server http://localhost:9000
+    - Login with credentials
 
 ## Execute OWASP ZAP With Appropriate Configuration
 
