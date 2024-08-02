@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
-                        def dockerImage = docker.image("${env.DOCKER_IMAGE_ID}")
+                        def dockerImage = docker.image("chariot97/petclinic:latest")
                         dockerImage.push('latest')
                     }
                 }
