@@ -17,17 +17,33 @@
 - Docker Desktop can also be downloaded and installed on the system via https://www.docker.com/products/docker-desktop/
 
 
+## Fork the Project Repository on GitHub/GitLab and Clone It to Your Local Machine
+
+1. **Navigate to the repository you want to fork on GitHub/GitLab**:
+    - Go to the repository page on GitHub or GitLab.
+
+2. **Click the "Fork" button in the top right corner**:
+    - This will create a personal copy of the repository under your GitHub/GitLab account.
+
+3. **Clone the forked repository to your local machine**:
+    - Open a terminal and run the following commands:
+    ```bash
+    git clone https://github.com/spring-projects/spring-petclinic
+    cd <your-repo-name>
+    ```
+
+
 ## Use Docker Compose to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
 
 1. **Create a Docker Compose file to define and run multi-container Docker applications**:
-    - Use the provided `docker-compose.yml` in your project root directory. Here is the content of `docker-compose.yml`:
+    - Use the provided `docker-compose.yml` in your project root directory. Here is the content of `docker-compose_spring-petclinic.yml`:
     ```yaml
     version: '3'
     services:
       jenkins:
         build: ./jenkins
         ports:
-          - "8080:8080"
+          - "8081:8080"
           - "50000:50000"
         volumes:
           - jenkins_home:/var/jenkins_home
@@ -35,6 +51,7 @@
         image: sonarqube
         ports:
           - "9000:9000"
+          - "9092:9092"
       prometheus:
         image: prom/prometheus
         volumes:
@@ -60,21 +77,6 @@
     ```
     - This Builds and Deploys docker containers using Docker Compose
 
-## Fork the Project Repository on GitHub/GitLab and Clone It to Your Local Machine
-
-1. **Navigate to the repository you want to fork on GitHub/GitLab**:
-    - Go to the repository page on GitHub or GitLab.
-
-2. **Click the "Fork" button in the top right corner**:
-    - This will create a personal copy of the repository under your GitHub/GitLab account.
-
-3. **Clone the forked repository to your local machine**:
-    - Open a terminal and run the following commands:
-    ```bash
-    git clone <your-forked-repo-url>
-    cd <your-repo-name>
-    ```
-
 
 ## Create a Jenkins Pipeline That Uses the Forked GitHub Repository
 
@@ -93,6 +95,7 @@
     - Choose `Git` and enter your repository URL.
     - Set the `Script Path` to `Jenkinsfile`.
 
+
 ## Set Up Build Triggers to Pull Source Control Management (SCM)
 
 1. **In the Jenkins pipeline configuration, set up build triggers**:
@@ -102,31 +105,53 @@
     H/5 * * * *
     ```
 
+
 ## Create and Invoke Build Steps for the Spring-Petclinic Project
 
 1. **Define the build steps in the Jenkinsfile to compile, test, and package the Spring-Petclinic project**:
-    - Ensure your `Jenkinsfile` includes stages for building, testing, and packaging:
-    ```groovy
-    pipeline {
-        agent any
-        stages {
-            stage('Build') {
-                steps {
-                    sh 'mvn clean package'
-                }
-            }
-            stage('Test') {
-                steps {
-                    sh 'mvn test'
-                }
-            }
-            stage('Deploy') {
-                steps {
-                    // Deployment steps
+    - Ensure your `Jenkinsfile` includes stages for Checkout, Building Docker Image, and Adding SSH Key and Deploying Container to VM:
+    ```
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "Checking out code..."
+                    git url: 'https://github.com/tautaus/spring-petclinic.git', branch: 'FinalProject_main', credentialsId: 'github-token'
                 }
             }
         }
-    }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building Docker Image..."
+                    def dockerImage = docker.build("petclinic:latest", "--no-cache .")
+                    echo "Docker Image built: ${dockerImage.id}"
+                    env.DOCKER_IMAGE_ID = dockerImage.id
+                }
+            }
+        }
+
+        stage('Add SSH Key and Deploy Container to VM') {
+            steps {
+                script {
+                    // Add the SSH key to known hosts and set permissions
+                    sh '''
+                        mkdir -p ~/.ssh
+                        chmod 700 ~/.ssh
+                        ssh-keyscan -H ec2-3-149-247-7.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+                        chmod 600 ~/.ssh/known_hosts
+                        chmod 600 /var/jenkins_home/ansible.pem
+                    '''
+                    // Execute the Ansible playbook
+                    ansiblePlaybook(
+                        playbook: '/var/jenkins_home/deploy.yml',
+                        inventory: '/var/jenkins_home/inventory',
+                        extras: '--private-key=/var/jenkins_home/ansible.pem'
+                    )
+                }
+            }
+        }
     ```
 
 ## Configure SonarQube to Perform Static Analysis for the Project
@@ -140,24 +165,59 @@
     - Add SonarQube servers under `SonarQube Servers`.
 
 3. **Add a SonarQube analysis stage to your Jenkinsfile**:
-    ```groovy
-    stage('SonarQube Analysis') {
-        steps {
-            withSonarQubeEnv('SonarQube') {
-                sh 'mvn sonar:sonar'
+    ```
+    stage('SonarQube analysis') {
+            steps {
+
+                script {
+                    scannerHome = tool 'sonar-scanner'// must match the name of an actual scanner installation directory on your Jenkins build agent
+                }
+                withSonarQubeEnv('test_sonarqube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dproject.settings=sonar-project.properties
+                        """
+                }
+
             }
         }
-    }
     ```
+
 
 ## Execute OWASP ZAP With Appropriate Configuration
 
 1. **Add OWASP ZAP as a stage in your Jenkins pipeline**:
-    - Use Docker to execute OWASP ZAP scan:
-    ```groovy
-    stage('OWASP ZAP Scan') {
-        steps {
-            sh 'docker run --rm -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://petclinic:8080'
+    ```
+    stage('Run ZAP Scan') {
+            steps {
+                script {
+                    // Create the zap-report directory
+                    sh "mkdir -p ${WORKSPACE}/zap-report"
+
+                    // Pull the ZAP image
+                    def zapImage = docker.image("ghcr.io/zaproxy/zaproxy:stable")
+
+                    // Run the ZAP scan
+                    try {
+                    // -I to ignore errors
+                    // -j to include inline css
+                        zapImage.inside("-v ${WORKSPACE}/zap-report:/zap/wrk:rw --name zap-scan --rm") {
+                            sh "zap-baseline.py -t http://3.149.247.7:8080 -g gen.conf -I -j -r zap-report.html"
+                            // Ensure the report is copied to the mounted volume
+                            sh "cp /zap/wrk/zap-report.html ${WORKSPACE}/zap-report/"
+                        }
+
+                        // Add a small delay before container cleanup
+                        sleep 5
+
+                        // Debug steps
+                        sh "ls -la ${WORKSPACE}/zap-report"
+                        sh "cat ${WORKSPACE}/zap-report/zap-report.html || echo 'ZAP report not found'"
+                    } catch (Exception e) {
+                        echo "Warnings found during ZAP scan: ${e.message}"
+                    }
+                }
+            }
         }
     }
     ```
@@ -168,16 +228,19 @@
     - Go to `Post-build Actions` and select `Publish HTML reports`.
     - Specify the path to the ZAP report.
 
+
 ## Install the Prometheus Plugin in Jenkins
 
 1. **Navigate to Manage Jenkins > Manage Plugins**:
     - Install the "Prometheus" plugin.
+
 
 ## Configure the Prometheus Plugin to Monitor Jenkins
 
 1. **Configure the Prometheus plugin in Jenkins**:
     - Go to `Manage Jenkins > Configure System`.
     - Enable the "Expose metrics to Prometheus" option.
+
 
 ## Configure Grafana to Use Prometheus as a Data Source
 
@@ -191,52 +254,38 @@
 3. **Create dashboards to visualize Jenkins metrics**:
     - Use the Grafana UI to create dashboards and add relevant panels to visualize metrics.
 
+
 ## Set Up a Virtual Machine (VM) to Act as the Production Web Server
 
-1. **Create a VM using Vagrant or another virtualization tool**:
-    - Install Vagrant from [Vagrant's official website](https://www.vagrantup.com/).
-    - Create a `Vagrantfile` in your project directory:
-    ```ruby
-    Vagrant.configure("2") do |config|
-      config.vm.box = "ubuntu/bionic64"
-      config.vm.network "private_network", type: "dhcp"
-      config.vm.provider "virtualbox" do |vb|
-        vb.memory = "1024"
-      end
-    end
-    ```
-    - Start the VM:
-    ```bash
-    vagrant up
-    ```
-
-2. **Configure the VM to host the production version of the Spring-Petclinic application**:
-    - SSH into the VM:
-    ```bash
-    vagrant ssh
-    ```
-    - Install necessary dependencies (Java, Maven, etc.) and deploy the Spring-Petclinic application.
+1. **Create a VM using EC2 Instance**:
+    
 
 ## Use Ansible on the Jenkins Build Server to Deploy the Spring-Petclinic Application
 
 1. **Create an Ansible playbook to deploy the application**:
-    - Create a file named `deploy.yml`:
-    ```yaml
-    - hosts: web
-      tasks:
-        - name: Deploy Spring-Petclinic
-          copy:
-            src: /path/to/your/application
-            dest: /path/on/the/production/server
-    ```
 
 2. **Add an Ansible deployment stage to your Jenkinsfile**:
-    ```groovy
-    stage('Deploy to Production') {
-        steps {
-            sh 'ansible-playbook -i inventory deploy.yml'
+    ```
+    stage('Add SSH Key and Deploy Container to VM') {
+            steps {
+                script {
+                    // Add the SSH key to known hosts and set permissions
+                    sh '''
+                        mkdir -p ~/.ssh
+                        chmod 700 ~/.ssh
+                        ssh-keyscan -H ec2-3-149-247-7.us-east-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+                        chmod 600 ~/.ssh/known_hosts
+                        chmod 600 /var/jenkins_home/ansible.pem
+                    '''
+                    // Execute the Ansible playbook
+                    ansiblePlaybook(
+                        playbook: '/var/jenkins_home/deploy.yml',
+                        inventory: '/var/jenkins_home/inventory',
+                        extras: '--private-key=/var/jenkins_home/ansible.pem'
+                    )
+                }
+            }
         }
-    }
     ```
 
 ## Ensure the Application is Deployed and Running on the Production Web Server
@@ -246,6 +295,7 @@
 
 2. **Check the Jenkins build logs for any deployment errors**:
     - Ensure there are no errors in the Jenkins build logs.
+
 
 ## Make and Push a Code Change to the GitHub Repository
 
@@ -267,11 +317,7 @@
 2. **Verify the build, test, and deployment steps complete successfully**:
     - Ensure all stages in the Jenkins pipeline complete without errors.
 
-## Deliverables
 
-1. **Step-by-Step Instructions (Grading - 30 points)**: Detailed documentation on setting up and configuring the DevSecOps pipeline.
-2. **Pipeline Setup and Configuration Files (Grading - 30 points)**: Submit the Docker commands and scripts used, including Dockerfiles, Vagrant files, Groovy scripts, YAML files, etc.
 
----
 
 This document provides a comprehensive guide to set up and configure the DevSecOps pipeline for your project. Follow each step carefully to ensure a successful deployment.
