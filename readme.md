@@ -273,18 +273,18 @@
 1. **Set up SonarQube server**
     - Go to sonarqube server http://localhost:9000
     - Login with following credentials and reset password when prompted:
-        username: admin
-        password: admin
+        - username: admin
+        - password: admin
     - Click on “Create a local project”
     - Create a project with following specifications:
-        Project display name: petclinic
-        Project key: petclinic
-        Main branch name: main
+        - Project display name: petclinic
+        - Project key: petclinic
+        - Main branch name: main
     - Choose “Use the global setting” then create the project
     - For the Analysis Method, choose “Locally”
     - To Analyze your project, choose Generate a project token, use the following specifications, then generate token:
-        Token name: Analyze “petclinic”
-        Expires in: 30 days
+        - Token name: Analyze “petclinic”
+        - Expires in: 30 days
     - Copy this token
 
 2. **Create credential SonarQube server and SonarQube scanner on Jenkins**
@@ -292,26 +292,26 @@
     - Navigate to: Manage Jenkins->Configurations
     - Choose global, then add credentials
     - Create new credential with following fields:
-        Kind: Secret text
-        Scope: Global
-        Secret: Paste token from Sonarqube server
-        ID: sonarqube_token
+        - Kind: Secret text
+        - Scope: Global
+        - Secret: Paste token from Sonarqube server
+        - ID: sonarqube_token
     
     
 
     **Setting up plugins for SonarQube server**
     - Navigate to: Manage Jenkins->Systems->SonarQube servers
     - Set the following fields:
-        Name: test_sonarqube
-        Server URL: http://sonarqube:9000
-        Server authentication token: Choose sonarqube_token
+        - Name: test_sonarqube
+        - Server URL: http://sonarqube:9000
+        - Server authentication token: Choose sonarqube_token
 
         
     **Setting up plugins for SonarQube scanner**
     - Navigate to: Manage Jenkins->Tools
     - Set following fields for SonarQube Scanner installations:
-        Name: sonar-scanner
-        Version: SonarQube Scanner 4.7.0.2747
+        - Name: sonar-scanner
+        - Version: SonarQube Scanner 4.7.0.2747
 
 
 
