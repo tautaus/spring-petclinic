@@ -2,19 +2,6 @@ version: '3'
 
 services:
 
-#  this is handled inside jenkins
-
-#  petclinic:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    image: petclinic:latest
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - custom-network
-
-
   jenkins:
     build:
       context: .
@@ -71,20 +58,6 @@ services:
       - prometheus
     env_file:
       - .env
-
-
-#This is handled inside of Jenkins
-
-#  zap:
-#    image: ghcr.io/zaproxy/zaproxy:stable
-#    command: zap-baseline.py -t http://petclinic:8080 -g gen.conf -r zap-report.html
-#    networks:
-#      - custom-network
-#    volumes:
-#      - ./zap-report:/zap/wrk:rw
-#    depends_on:
-#      - petclinic
-
 
   db:
     image: postgres:12

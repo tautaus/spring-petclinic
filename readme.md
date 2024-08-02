@@ -187,6 +187,17 @@
         }
     ```
 
+    **SonarQube Property file content**:
+    ```
+    sonar.projectKey=petclinic
+    sonar.projectName=petclinic
+    sonar.projectVersion=1.0
+    sonar.sources=.
+    sonar.exclusions=**/*.java
+    sonar.token=sqp_8502c2c771d73583f4bbfc86738fbca61707bb63
+    ```
+
+
 4. **Login to SonarQube**:
     - Go to sonarqube server http://localhost:9000
     - Login with credentials and reset password when prompted:
@@ -282,8 +293,8 @@
 
 ## Use Ansible on the Jenkins Build Server to Deploy the Spring-Petclinic Application
 
-1. **Create an Ansible playbook to deploy the application**:
-
+1. **Create an Ansible playbook to deploy the application**
+2. Set the configurations within `deploy.yml`
 2. **Add an Ansible deployment stage to your Jenkinsfile**:
     ```
     stage('Add SSH Key and Deploy Container to VM') {
