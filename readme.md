@@ -293,8 +293,8 @@
 
 ## Use Ansible on the Jenkins Build Server to Deploy the Spring-Petclinic Application
 
-1. **Create an Ansible playbook to deploy the application**:
-
+1. **Create an Ansible playbook to deploy the application**
+2. Set the configurations within `deploy.yml`
 2. **Add an Ansible deployment stage to your Jenkinsfile**:
     ```
     stage('Add SSH Key and Deploy Container to VM') {
