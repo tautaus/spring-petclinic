@@ -28,6 +28,17 @@ pipeline {
             }
         }
 
+        stage('Push Docker Image to DockerHub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        def dockerImage = docker.image("${env.DOCKER_IMAGE_ID}")
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+
         stage('Add SSH Key and Deploy Container to VM') {
             steps {
                 script {
