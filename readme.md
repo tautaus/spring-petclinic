@@ -36,7 +36,7 @@
 ## Use Docker Compose to Set Up Containers for Jenkins, SonarQube, Prometheus, Grafana, and OWASP ZAP
 
 1. **Create a Docker Compose file to define and run multi-container Docker applications**:
-    - Use the provided `docker-compose.yml` in your project root directory. Here is the content of `docker-compose_spring-petclinic.yml`:
+    - Here is the content of `docker-compose_spring-petclinic.yml`:
     ```yaml
     version: '3'
     services:
